@@ -47,32 +47,51 @@ export default function Categories() {
     <>
       <Typography
         sx={{
-          marginBottom: "10px",
           marginLeft: "4%",
           color: "#34d399",
           fontWeight: "bold",
-          fontSize: "1.3rem",
+          fontSize: "1.4rem",
+          letterSpacing: "0.05rem",
+          textTransform: "uppercase",
+          display: "inline-block",
         }}
       >
         All Categories
-        <br />
       </Typography>
+
       <Box
         sx={{
           display: "flex",
           justifyContent: "center",
           width: "100%",
+          mt: 4,
         }}
       >
-        <TableContainer component={Paper} sx={{ maxWidth: 1200 }}>
-          <Table sx={{ minWidth: 400 }} aria-label="simple table">
+        <TableContainer
+          component={Paper}
+          sx={{
+            maxWidth: 1200,
+            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1)", // Soft shadow for depth
+            borderRadius: 3,
+            overflow: "hidden",
+          }}
+        >
+          <Table sx={{ minWidth: 400 }} aria-label="styled table">
             <TableHead>
-              <TableRow>
-                <TableCell>#</TableCell>
-                <TableCell align="center">Name</TableCell>
-                <TableCell align="center">Description</TableCell>
-                <TableCell align="center">Image</TableCell>
-                <TableCell align="center">Action</TableCell>
+              <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+                <TableCell sx={{ fontWeight: "bold" }}>#</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  Name
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  Description
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  Image
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  Action
+                </TableCell>
               </TableRow>
             </TableHead>
             {isLoading ? (
@@ -82,7 +101,13 @@ export default function Categories() {
                 {data?.data?.map((row, index) => (
                   <TableRow
                     key={index}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    sx={{
+                      "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" },
+                      "&:hover": {
+                        backgroundColor: "#eff7fa",
+                        cursor: "pointer",
+                      },
+                    }}
                   >
                     <TableCell component="th" scope="row">
                       {index + 1}
@@ -95,13 +120,14 @@ export default function Categories() {
                         alt="logo"
                         width={50}
                         height={50}
-                        style={{ objectFit: "contain" }}
+                        style={{ objectFit: "contain", borderRadius: "8px" }} // Image styling
                       />
                     </TableCell>
                     <TableCell align="center">
                       <IconButton
                         aria-label="edit"
-                        onClick={() => handleEdit(row.id)} // يجب أن تحتوي على المنطق لفتح الحوار
+                        onClick={() => handleEdit(row.id)}
+                        sx={{ color: "#4caf50", mr: 1 }}
                       >
                         <FaEdit size={20} />
                       </IconButton>
@@ -120,6 +146,7 @@ export default function Categories() {
           </Table>
         </TableContainer>
       </Box>
+
       <DeleteDialog
         open={openDialog}
         onClose={handleClose}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -6,20 +6,25 @@ import {
   DialogActions,
   Button,
   Box,
+  Typography,
+  Card,
+  CardMedia,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import InputField from "./InputField";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Axios } from "@/libs/axios";
 import LoadingCircle from "./LoadingCircle";
 
-const validationSchema = Yup.object({
-  //   name: Yup.string().required("Category Name is required"),
-  image: Yup.mixed().required(" Image is required"),
-});
-
 const CreateImages = ({ open, onClose }) => {
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const { data, isLoading } = useQuery({
+    queryFn: () => Axios.get(`/categories`),
+    queryKey: ["get-cat"],
+  });
   const mutation = useMutation({
     mutationFn: async (formData) => {
       const response = await Axios.post("/images", formData);
@@ -28,29 +33,23 @@ const CreateImages = ({ open, onClose }) => {
     onSuccess: () => {
       console.log("Images created successfully");
       onClose();
+      setSelectedFiles([]);
     },
     onError: (error) => {
       console.error("Error processing Image:", error);
     },
   });
 
-  const formik = useFormik({
-    initialValues: {
-      //   name: "",
-      image: null,
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      const formData = new FormData();
-      //   formData.append("name", values.name);
-      formData.append("image", values.image);
-
-      mutation.mutate(formData);
-    },
-  });
-
   const handleFileChange = (event) => {
-    formik.setFieldValue("image", event.currentTarget.files[0]);
+    const files = Array.from(event.target.files);
+    setSelectedFiles(files);
+  };
+
+  const handleSubmit = () => {
+    const formData = new FormData();
+    selectedFiles.forEach((file) => formData.append("image", file));
+
+    mutation.mutate(formData);
   };
 
   return (
@@ -59,21 +58,51 @@ const CreateImages = ({ open, onClose }) => {
         Add Images
       </DialogTitle>
       <DialogContent>
-        <Box
-          component="form"
-          sx={{ "& .MuiTextField-root": { m: 1 } }}
-          onSubmit={formik.handleSubmit}
-        >
-          {/* <InputField label="Category Name" id="name" formik={formik} /> */}
-
+        <Box component="form" sx={{ "& .MuiTextField-root": { m: 1 } }}>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <Select
+              labelId="category-select-label"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              displayEmpty
+              sx={{ minWidth: 120 }}
+            >
+              <MenuItem value="">
+                <em>All Categories</em>
+              </MenuItem>
+              {!isLoading &&
+                data?.data?.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
           <input
             multiple
-            label="Image"
             id="image"
             type="file"
-            formik={formik}
             onChange={handleFileChange}
+            accept="image/*"
           />
+
+          <Box sx={{ mt: 2 }}>
+            {selectedFiles.length > 0 && (
+              <Typography variant="body2">Selected Images:</Typography>
+            )}
+            <Box display="flex" flexWrap="wrap" gap={2}>
+              {selectedFiles.map((file, index) => (
+                <Card key={index} sx={{ maxWidth: 150 }}>
+                  <CardMedia
+                    component="img"
+                    image={URL.createObjectURL(file)}
+                    alt={`Selected ${index + 1}`}
+                    sx={{ height: 100, objectFit: "cover" }}
+                  />
+                </Card>
+              ))}
+            </Box>
+          </Box>
         </Box>
       </DialogContent>
       <DialogActions>
@@ -81,8 +110,8 @@ const CreateImages = ({ open, onClose }) => {
           Cancel
         </Button>
         <Button
-          type="submit"
-          onClick={formik.handleSubmit}
+          type="button"
+          onClick={handleSubmit}
           color="primary"
           disabled={mutation.isLoading}
         >

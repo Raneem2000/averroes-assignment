@@ -19,11 +19,11 @@ const InputField = ({ label, id, type = "text", formik }) => {
           : formik.handleChange
       }
       onBlur={formik.handleBlur}
-      value={!isFileInput ? formik.values[id] || "" : undefined} // Use undefined for file inputs, empty string for text inputs
+      value={!isFileInput ? formik.values[id] || "" : undefined}
       error={formik.touched[id] && Boolean(formik.errors[id])}
       helperText={formik.touched[id] && formik.errors[id]}
-      InputLabelProps={type === "file" ? { shrink: true } : {}} // Shrink label for file input
-      inputProps={type === "file" ? { accept: "image/*" } : {}} // Accept only images for file input
+      InputLabelProps={type === "file" ? { shrink: true } : {}}
+      inputProps={type === "file" ? { accept: "image/*" } : {}}
     />
   );
 };

@@ -22,9 +22,9 @@ const Page = () => {
   const [deleteId, setDeleteId] = React.useState(null);
   const [openCard, setOpenCard] = React.useState(false);
   const [imageId, setImageId] = React.useState(null);
-  const [images, setImages] = React.useState([]); // State to store images
-  const [newImageUrls, setNewImageUrls] = React.useState({}); // State to store new image URLs by image ID
-  const [showFilters, setShowFilters] = React.useState(false); // حالة لعرض الفلاتر
+  const [images, setImages] = React.useState([]);
+  const [newImageUrls, setNewImageUrls] = React.useState({});
+  const [showFilters, setShowFilters] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState("");
   const [selectedSize, setSelectedSize] = React.useState("");
@@ -82,11 +82,13 @@ const Page = () => {
       >
         <Typography
           sx={{
-            marginBottom: "10px",
             marginLeft: "4%",
             color: "#34d399",
             fontWeight: "bold",
-            fontSize: "1.3rem",
+            fontSize: "1.4rem",
+            letterSpacing: "0.05rem",
+            textTransform: "uppercase",
+            display: "inline-block",
           }}
         >
           All Images
@@ -146,7 +148,7 @@ const Page = () => {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={newImageUrls[image.id] || image.url} // Use new URL if available
+                  image={newImageUrls[image.id] || image.url}
                   alt={image.name}
                   sx={{
                     objectFit: "cover",
@@ -173,16 +175,16 @@ const Page = () => {
                     sx={{ color: "white", mx: 1 }}
                     onClick={() =>
                       document.getElementById(`file-input-${image.id}`).click()
-                    } // Trigger file input click
+                    }
                   >
                     <FaEdit size={20} />
                   </IconButton>
                   <input
-                    id={`file-input-${image.id}`} // Use a unique ID for the input
+                    id={`file-input-${image.id}`}
                     type="file"
                     accept="image/*"
-                    style={{ display: "none" }} // Hide the input
-                    onChange={(event) => handleFileChange(event, image)} // Call on change
+                    style={{ display: "none" }}
+                    onChange={(event) => handleFileChange(event, image)}
                   />
                   <IconButton
                     sx={{ color: "white", mx: 1 }}
